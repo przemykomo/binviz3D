@@ -1,6 +1,8 @@
 binviz
 img2raw
+3dviewer
 nob
 nob.old
 data/
 *.swp
+*.binviz3d

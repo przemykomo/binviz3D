@@ -1,8 +1,7 @@
 #define NOB_IMPLEMENTATION
 #include "nob.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     NOB_GO_REBUILD_URSELF(argc, argv);
 
     const char *program = nob_shift_args(&argc, &argv);
@@ -32,7 +31,19 @@ int main(int argc, char **argv)
         nob_log(NOB_INFO, "img2raw is fresh");
     }
 
-    if (!nob_procs_wait(procs)) return 1;
+    if (nob_needs_rebuild1("3dviewer", "3dviewer.c")) {
+        cmd.count = 0;
+        nob_cmd_append(&cmd, "cc");
+        nob_cmd_append(&cmd, "-Wall", "-Wextra", "-ggdb", "-pedantic");
+        nob_cmd_append(&cmd, "-lraylib", "-lGL", "-lm", "-lpthread", "-ldl", "-lrt", "-lX11");
+        nob_cmd_append(&cmd, "-o", "3dviewer", "3dviewer.c");
+        nob_da_append(&procs, nob_cmd_run_async(cmd));
+    } else {
+        nob_log(NOB_INFO, "3dviewer is fresh");
+    }
+
+    if (!nob_procs_wait(procs))
+        return 1;
 
     if (argc > 0) {
         const char *subcmd = nob_shift_args(&argc, &argv);
@@ -42,6 +53,8 @@ int main(int argc, char **argv)
             nob_cmd_append(&cmd, "./img2raw");
         } else if (strcmp(subcmd, "binviz") == 0) {
             nob_cmd_append(&cmd, "./binviz");
+        } else if (strcmp(subcmd, "3dviewer") == 0) {
+            nob_cmd_append(&cmd, "./3dviewer");
         } else {
             nob_log(NOB_ERROR, "Unknown subcommand %s", subcmd);
             return 1;
@@ -50,7 +63,8 @@ int main(int argc, char **argv)
         for (size_t i = 0; i < argc; ++i) {
             nob_cmd_append(&cmd, argv[i]);
         }
-        if (!nob_cmd_run_sync(cmd)) return 1;
+        if (!nob_cmd_run_sync(cmd))
+            return 1;
     }
 
     return 0;
