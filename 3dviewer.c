@@ -9,6 +9,8 @@
 Mesh GenMesh(uint8_t* data, size_t map_size, float size);
 Camera ResetCamera();
 
+uint8_t threshold = 0;
+
 int main(int argc, char **argv) {
     const char *program = nob_shift_args(&argc, &argv);
 
@@ -54,6 +56,20 @@ int main(int argc, char **argv) {
         if (IsKeyPressed(KEY_R)) {
             camera = ResetCamera();
         }
+
+        if (IsKeyPressed(KEY_TAB)) {
+            if (IsKeyDown(KEY_LEFT_SHIFT)) {
+                threshold -= 8;
+            } else {
+                threshold += 8;
+            }
+
+            UnloadModel(shellModel);
+            shellMesh = GenMesh((uint8_t*) content.items, map_size, 10.0f);
+            shellModel = LoadModelFromMesh(shellMesh);
+            shellModel.materials[0].shader = shader;
+        }
+
         UpdateCamera(&camera, CAMERA_THIRD_PERSON);
         BeginDrawing();
         ClearBackground(BLACK);
@@ -66,7 +82,7 @@ int main(int argc, char **argv) {
         DrawCubeWires(cubePosition, 10.0f, 10.0f, 10.0f, WHITE);
         DrawGrid(10, 1.0f);
         EndMode3D();
-        DrawText("ESC - Exit, R - Reset camera", 5, 5, 16, LIGHTGRAY);
+        DrawText(TextFormat("ESC - Exit, R - Reset camera, (Shift) Tab - Change display threshold\nCurrent threshold: %d", threshold), 5, 5, 16, LIGHTGRAY);
         EndDrawing();
     }
 
@@ -92,7 +108,8 @@ Mesh GenMesh(uint8_t* data, size_t map_size, float size) {
         for (size_t y = 0; y < map_size; y++) {
             for (size_t z = 0; z < map_size; z++) {
                 uint8_t point = data[z * map_size * map_size + x * map_size + y];
-                if (point != 0x00) {
+                // There has to be a configurable threshold or else the whole mesh would be too large to display with some files
+                if (point > threshold) { 
                     int index = quads * 4;
                     vertices[index] =     (Vector3){size * x / map_size,       size * y / map_size,       size * z / map_size};
                     vertices[index + 1] = (Vector3){size * (x + 1) / map_size, size * y / map_size,       size * z / map_size};

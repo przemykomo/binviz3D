@@ -1,12 +1,13 @@
 # Binary Visualization
 
+This is a 3D version of a program made by tsoding: https://github.com/tsoding/binviz
 Binary Visualization based on Christopher Domas talk: https://www.youtube.com/watch?v=4bM3Gut1hIk
 
 ## Main Idea
 
-- Scan the pairs of bytes of a file with a sliding window. (`AA BB CC DD ...` -> `(AA, BB) (BB, CC) (CC, DD) ...`);
-- Interpret the pairs of bytes as coordinates on a 256x256 2D plain;
-- Place a dot for each pair on the plain;
+- Scan the triples of bytes of a file with a sliding window. (`AA BB CC DD ...` -> `(AA, BB, CC) (BB, CC, DD) ...`);
+- Interpret the triples of bytes as coordinates on a 256x256x256 3D volume;
+- Place a dot for each triple in the volume;
 - The more frequent the dot, the brighter it is;
 - Different patterns emerge depending on the type of the data of the file.
 
@@ -14,32 +15,29 @@ Binary Visualization based on Christopher Domas talk: https://www.youtube.com/wa
 
 ### x86_64 ELF executables
 
-![xkbprint](./demos/exec/xkbprint.binviz.png)
-![xournal](./demos/exec/xournal.binviz.png)
-![x-terminal-emulator](./demos/exec/x-terminal-emulator.binviz.png)
+![clang](./demos/exec/clang.png)
+![gimp](./demos/exec/gimp.png)
+![ls](./demos/exec/ls.png)
 
 ### RGBA32 Raw Images
 
-![forsen1](./demos/imgs/forsen1.png.raw.binviz.png)
-![jebaited](./demos/imgs/jebaited.png.raw.binviz.png)
-![kkoooooona](./demos/imgs/kkoooooona.png.raw.binviz.png)
+![img1](./demos/imgs/img1.png)
+![img2](./demos/imgs/img2.png)
+![img3](./demos/imgs/img3.png)
 
-### Ogg Files with Chiptune
+### Ogg Files
 
-![1.ogg](./demos/oggs/1.ogg.binviz.png)
-![2.ogg](./demos/oggs/2.ogg.binviz.png)
-![3.ogg](./demos/oggs/3.ogg.binviz.png)
-
-### Wav Files with Chiptune
-
-![1.wav](./demos/wavs/1.wav.binviz.png)
-![2.wav](./demos/wavs/2.wav.binviz.png)
-![3.wav](./demos/wavs/3.wav.binviz.png)
+![ogg1](./demos/oggs/ogg1.png)
+![ogg2](./demos/oggs/ogg2.png)
 
 ## Quick Start
 
 ```console
 $ cc -o nob nob.c
 $ ./nob binviz ./nob.c
-$ feh ./nob.c.binviz.png
+$ ./3dviewer nob.c.binviz3d
 ```
+
+## Limitations of the 3D viewer
+The mesh might get so big it isn't displayed correctly.
+In such case you can raise the threshold with the tab key to ignore more darker points.
